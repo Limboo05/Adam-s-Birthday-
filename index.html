@@ -1,0 +1,1036 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Adam Sadiq Ismail - Birthday Experience</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            /* The 6-Color Palette */
+            --color-primary: #FF0055; /* Energetic Pink */
+            --color-secondary: #00E5FF; /* Cyan */
+            --color-accent: #FFD600; /* Gold */
+            --color-purple: #6C00FF; /* Deep Purple */
+            --color-green: #00E676; /* Success Green */
+            --color-white: #FFFFFF; /* White */
+
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.1);
+            --nav-bg: rgba(18, 18, 18, 0.95);
+            --transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        body.light-mode {
+            --bg-color: #F0F2F5;
+            --text-color: #1a1a1a;
+            --card-bg: rgba(255, 255, 255, 0.8);
+            --nav-bg: rgba(255, 255, 255, 0.95);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            overflow-x: hidden;
+            transition: background-color 0.5s ease, color 0.5s ease;
+            padding-bottom: 100px; /* Space for nav */
+        }
+
+        /* --- Global Utilities --- */
+        .container {
+            max-width: 600px; /* Mobile focused max-width */
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        .section {
+            min-height: 90vh; /* Full viewport sections */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem 1rem;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: var(--transition);
+        }
+
+        .section.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        h2 {
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(45deg, var(--color-primary), var(--color-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, var(--color-primary), var(--color-purple));
+            border: none;
+            padding: 12px 24px;
+            color: white;
+            border-radius: 50px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 0, 85, 0.4);
+            transition: transform 0.2s;
+            font-size: 1rem;
+        }
+
+        .btn:active { transform: scale(0.95); }
+
+        /* --- Header / Status Bar --- */
+        .status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: linear-gradient(to bottom, var(--bg-color), transparent);
+            pointer-events: none; /* Let clicks pass through */
+        }
+        
+        .status-bar > * { pointer-events: auto; }
+
+        .key-counter {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 1px solid var(--color-accent);
+            box-shadow: 0 0 10px rgba(255, 214, 0, 0.3);
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* --- Intro Section --- */
+        #intro-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--bg-color);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .name-input {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid var(--color-secondary);
+            color: var(--text-color);
+            font-size: 1.5rem;
+            text-align: center;
+            margin: 20px 0;
+            padding: 5px;
+            outline: none;
+            width: 100%;
+        }
+
+        .mad-name-reveal span {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px) rotate(-10deg);
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--color-secondary), var(--color-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- Memories Section (Scroll Animation) --- */
+        .memory-card {
+            width: 100%;
+            height: 250px;
+            background-color: #333;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            position: relative;
+            opacity: 0; /* JS handles fade in */
+            transform: scale(0.8);
+            transition: all 0.6s ease;
+        }
+
+        .memory-card.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .memory-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .memory-caption {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 10px;
+            transform: translateY(100%);
+            transition: transform 0.3s;
+        }
+
+        .memory-card:hover .memory-caption {
+            transform: translateY(0);
+        }
+
+        /* --- Puzzle / Prayer Section --- */
+        .puzzle-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            width: 300px;
+            height: 300px;
+            margin: 0 auto 20px;
+            background: #333;
+            padding: 5px;
+            border-radius: 10px;
+        }
+
+        .puzzle-piece {
+            width: 100%;
+            height: 100%;
+            background-size: 300px 300px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .puzzle-piece.selected {
+            border: 2px solid var(--color-accent);
+            transform: scale(0.95);
+            z-index: 10;
+        }
+
+        .prayer-form {
+            display: none;
+            width: 100%;
+            animation: fadeIn 0.5s;
+        }
+
+        .prayer-form textarea {
+            width: 100%;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid var(--color-secondary);
+            background: var(--card-bg);
+            color: var(--text-color);
+            font-family: inherit;
+            resize: none;
+            margin-bottom: 10px;
+        }
+
+        /* --- Cake & Disco Section --- */
+        .cake-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .cake-container:active { transform: scale(0.9); }
+        
+        .cake-svg {
+            width: 100%;
+            height: 100%;
+            fill: var(--color-primary);
+            filter: drop-shadow(0 0 20px rgba(255,0,85,0.5));
+        }
+
+        .disco-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0;
+            background: radial-gradient(circle, transparent 20%, rgba(255,255,255,0.1) 80%);
+            mix-blend-mode: overlay;
+        }
+
+        .disco-active .disco-overlay {
+            animation: discoLights 0.5s infinite;
+        }
+
+        @keyframes discoLights {
+            0% { background: rgba(255,0,0,0.3); }
+            25% { background: rgba(0,255,0,0.3); }
+            50% { background: rgba(0,0,255,0.3); }
+            75% { background: rgba(255,255,0,0.3); }
+            100% { background: rgba(255,0,255,0.3); }
+        }
+
+        /* --- Wish Tree --- */
+        .tree-branch {
+            width: 100%;
+            height: 200px;
+            background: url('https://picsum.photos/seed/tree/600/300') no-repeat center bottom; /* Placeholder for tree */
+            background-size: contain;
+            position: relative;
+        }
+
+        .wish-tag {
+            position: absolute;
+            background: var(--color-accent);
+            color: #000;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            max-width: 100px;
+            animation: swing 3s infinite ease-in-out;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        }
+
+        @keyframes swing {
+            0%, 100% { transform: rotate(-5deg); }
+            50% { transform: rotate(5deg); }
+        }
+
+        /* --- Gift Section --- */
+        .gift-box {
+            width: 200px;
+            height: 200px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-purple));
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(108, 0, 255, 0.5);
+            transition: transform 0.3s;
+        }
+
+        .gift-box.locked {
+            cursor: not-allowed;
+            animation: shake 0.5s infinite;
+        }
+
+        .gift-box.unlocked {
+            background: var(--color-green);
+            animation: pulse 2s infinite;
+        }
+
+        .gift-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 2000;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        /* --- Navigation --- */
+        .nav-dots {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            background: var(--nav-bg);
+            padding: 10px 20px;
+            border-radius: 30px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+            z-index: 500;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--text-color);
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+
+        .nav-dot.active {
+            color: var(--color-secondary);
+            transform: translateY(-5px);
+        }
+        
+        .nav-dot.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            width: 5px;
+            height: 5px;
+            background: var(--color-secondary);
+            border-radius: 50%;
+        }
+
+        /* --- Animations --- */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes shake { 0%, 100% { transform: rotate(0deg); } 25% { transform: rotate(-5deg); } 75% { transform: rotate(5deg); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0.7); } 70% { box-shadow: 0 0 0 20px rgba(0, 230, 118, 0); } 100% { box-shadow: 0 0 0 0 rgba(0, 230, 118, 0); } }
+
+        /* --- Confetti Canvas --- */
+        #confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        /* --- Toast Notification --- */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-20px);
+            background: var(--color-purple);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 2000;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            pointer-events: none;
+            text-align: center;
+            font-size: 0.9rem;
+            width: 90%;
+            max-width: 300px;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Confetti Canvas -->
+    <canvas id="confetti"></canvas>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <div class="key-counter">
+            <i class="fas fa-key" style="color: var(--color-accent);"></i>
+            <span id="key-count">0</span>/7
+        </div>
+        <button class="theme-toggle" onclick="toggleTheme()">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">Message here</div>
+
+    <!-- Intro Screen -->
+    <div id="intro-screen">
+        <h1 style="font-size: 2.5rem; margin-bottom: 10px;">Feb 10</h1>
+        <p>Enter your name to begin the journey</p>
+        <input type="text" id="user-name-input" class="name-input" placeholder="Your Name" autocomplete="off">
+        <button class="btn" onclick="startJourney()">Start Celebration</button>
+    </div>
+
+    <!-- Main Content (Initially Hidden) -->
+    <main id="main-content" style="display: none;">
+        
+        <!-- Section 1: Hero -->
+        <section id="sec-hero" class="section active">
+            <p style="color: var(--color-secondary); letter-spacing: 2px;">WELCOME TO THE BIRTHDAY OF</p>
+            <div class="mad-name-reveal" id="hero-name">
+                <!-- Letters injected via JS -->
+            </div>
+            <p id="personal-msg" style="margin-top: 20px; font-size: 1.1rem; opacity: 0;"></p>
+            <div style="margin-top: 30px;">
+                <i class="fas fa-chevron-down fa-bounce" style="font-size: 2rem; color: var(--color-primary);"></i>
+            </div>
+        </section>
+
+        <!-- Section 2: Memories -->
+        <section id="sec-memories" class="section">
+            <h2>Mad Memories</h2>
+            <div class="memory-card">
+                <img src="https://picsum.photos/seed/adam1/400/300" alt="Memory 1">
+                <div class="memory-caption">The Early Days</div>
+            </div>
+            <div class="memory-card">
+                <img src="https://picsum.photos/seed/adam2/400/300" alt="Memory 2">
+                <div class="memory-caption">Great Adventures</div>
+            </div>
+            <div class="memory-card">
+                <img src="https://picsum.photos/seed/adam3/400/300" alt="Memory 3">
+                <div class="memory-caption">Celebrations</div>
+            </div>
+        </section>
+
+        <!-- Section 3: Puzzle & Prayer -->
+        <section id="sec-puzzle" class="section">
+            <h2>Unlock Prayers</h2>
+            <p style="margin-bottom: 15px; font-size: 0.9rem;">Arrange the puzzle to unlock the prayer wall.</p>
+            
+            <div id="puzzle-game" class="puzzle-container">
+                <!-- Puzzle pieces injected JS -->
+            </div>
+            
+            <div id="prayer-area" class="prayer-form">
+                <h3 style="color: var(--color-green); margin-bottom: 10px;">Unlocked! <i class="fas fa-lock-open"></i></h3>
+                <textarea id="prayer-input" rows="4" placeholder="Type your prayer/wish for Adam here..."></textarea>
+                <button class="btn" onclick="submitPrayer()">Post Prayer</button>
+                <div id="prayer-list" style="margin-top: 20px; width: 100%;"></div>
+            </div>
+        </section>
+
+        <!-- Section 4: Cake & Disco -->
+        <section id="sec-cake" class="section">
+            <h2>Light the Candle</h2>
+            <div class="cake-container" onclick="interactWithCake()">
+                <svg viewBox="0 0 100 100" class="cake-svg">
+                    <path d="M10 90 L90 90 L85 50 L15 50 Z" fill="#FF4081" />
+                    <rect x="45" y="20" width="10" height="30" fill="#FFFFFF" />
+                    <ellipse cx="50" cy="20" rx="15" ry="20" fill="#FFD600" id="flame" />
+                    <text x="50" y="80" text-anchor="middle" fill="white" font-size="10" font-weight="bold">ADAM</text>
+                </svg>
+            </div>
+            <p style="margin-top: 20px;">Tap the cake to start the party!</p>
+            <button id="disco-btn" class="btn" style="margin-top: 10px; display: none;" onclick="stopDisco()">Stop Party</button>
+        </section>
+
+        <!-- Section 5: Quiz -->
+        <section id="sec-quiz" class="section">
+            <h2>Quiz Time</h2>
+            <div id="quiz-box" style="background: var(--card-bg); padding: 20px; border-radius: 10px; width: 100%;">
+                <p id="quiz-q" style="font-size: 1.1rem; margin-bottom: 15px;">What is Adam's Birthday?</p>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="btn" style="background: var(--bg-color); border: 1px solid var(--color-primary);" onclick="checkAnswer(false)">Feb 12</button>
+                    <button class="btn" style="background: var(--bg-color); border: 1px solid var(--color-primary);" onclick="checkAnswer(true)">Feb 10</button>
+                    <button class="btn" style="background: var(--bg-color); border: 1px solid var(--color-primary);" onclick="checkAnswer(false)">Jan 10</button>
+                </div>
+            </div>
+            <div id="quiz-success" style="display: none; text-align: center;">
+                <i class="fas fa-check-circle" style="font-size: 3rem; color: var(--color-green);"></i>
+                <p>Correct! Key Collected.</p>
+            </div>
+        </section>
+
+        <!-- Section 6: The Gift -->
+        <section id="sec-gift" class="section">
+            <h2>The Grand Gift</h2>
+            <p id="gift-msg">Collect all 7 keys to open this.</p>
+            
+            <div class="gift-box locked" id="main-gift" onclick="tryOpenGift()">
+                <i class="fas fa-gift" style="font-size: 5rem; color: white;"></i>
+            </div>
+
+            <div id="compartments" style="display: none; margin-top: 20px; text-align: left; width: 100%;">
+                <h3 style="color: var(--color-accent);">Gift Contents:</h3>
+                <ul style="list-style: none; margin-top: 10px;">
+                    <li style="margin-bottom: 10px;"><i class="fas fa-heart" style="color: var(--color-primary);"></i> Eternal Happiness</li>
+                    <li style="margin-bottom: 10px;"><i class="fas fa-star" style="color: var(--color-secondary);"></i> Success in all endeavors</li>
+                    <li style="margin-bottom: 10px;"><i class="fas fa-coins" style="color: var(--color-purple);"></i> Abundance & Wealth</li>
+                </ul>
+                <button class="btn" onclick="shareEvent()">Share Joy</button>
+            </div>
+        </section>
+
+    </main>
+
+    <div class="disco-overlay"></div>
+
+    <!-- Navigation -->
+    <div class="nav-dots" id="nav-dots">
+        <!-- Dots injected via JS -->
+    </div>
+
+    <!-- Gift Modal -->
+    <div class="gift-modal" id="final-modal">
+        <h1 style="font-size: 3rem; margin-bottom: 20px;">HAPPY BIRTHDAY<br>ADAM!</h1>
+        <p style="font-size: 1.2rem; margin-bottom: 30px;">May your year be filled with light and love.</p>
+        <button class="btn" onclick="closeModal()">Continue Celebrating</button>
+    </div>
+
+    <script>
+        /* --- State Management --- */
+        const state = {
+            userName: '',
+            keys: 0,
+            sections: ['sec-hero', 'sec-memories', 'sec-puzzle', 'sec-cake', 'sec-quiz', 'sec-gift'],
+            currentSectionIndex: 0,
+            disco: false,
+            puzzleSolved: false,
+            quizSolved: false,
+            prayerPosted: false,
+            candlesBlown: false
+        };
+
+        const totalKeys = 7;
+
+        /* --- Audio System (Synthesized) --- */
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playSound(type) {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            const osc = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'click') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.exponentialRampToValueAtTime(300, now + 0.1);
+                gainNode.gain.setValueAtTime(0.1, now);
+                gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+                osc.start(now);
+                osc.stop(now + 0.1);
+            } else if (type === 'success') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(400, now);
+                osc.frequency.linearRampToValueAtTime(800, now + 0.1);
+                osc.frequency.linearRampToValueAtTime(1200, now + 0.3);
+                gainNode.gain.setValueAtTime(0.1, now);
+                gainNode.gain.linearRampToValueAtTime(0, now + 0.5);
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } else if (type === 'music') {
+                // Simple melody loop
+                playMelody();
+            }
+        }
+
+        function playMelody() {
+            const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63]; // C E G C G E
+            let time = audioCtx.currentTime;
+            notes.forEach((freq, i) => {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.05, time + i * 0.3);
+                gain.gain.exponentialRampToValueAtTime(0.001, time + i * 0.3 + 0.4);
+                
+                osc.start(time + i * 0.3);
+                osc.stop(time + i * 0.3 + 0.4);
+            });
+        }
+
+        /* --- Core Functions --- */
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        function addKey(amount = 1) {
+            if (state.keys < totalKeys) {
+                state.keys = Math.min(state.keys + amount, totalKeys);
+                document.getElementById('key-count').textContent = state.keys;
+                playSound('success');
+                showToast(`Key Collected! (${state.keys}/${totalKeys})`);
+                
+                if (state.keys === totalKeys) {
+                    document.getElementById('main-gift').classList.remove('locked');
+                    document.getElementById('main-gift').classList.add('unlocked');
+                    document.getElementById('gift-msg').textContent = "The gift is ready to open!";
+                    document.getElementById('gift-msg').style.color = "var(--color-green)";
+                }
+            }
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('light-mode');
+            const icon = document.querySelector('.theme-toggle i');
+            if (document.body.classList.contains('light-mode')) {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            } else {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            }
+            playSound('click');
+        }
+
+        /* --- Initialization --- */
+        function startJourney() {
+            const input = document.getElementById('user-name-input');
+            if (!input.value.trim()) {
+                showToast("Please enter your name first!");
+                return;
+            }
+            state.userName = input.value.trim();
+            
+            // Animate Intro Out
+            document.getElementById('intro-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('intro-screen').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+                initMainApp();
+            }, 500);
+        }
+
+        function initMainApp() {
+            // Name Animation
+            const nameContainer = document.getElementById('hero-name');
+            const fullName = "ADAM SADIQ ISMAIL";
+            nameContainer.innerHTML = '';
+            
+            fullName.split('').forEach((char, index) => {
+                const span = document.createElement('span');
+                span.textContent = char === ' ' ? '\u00A0' : char;
+                span.style.animation = `fadeInUp 0.5s forwards ${index * 0.1}s`;
+                nameContainer.appendChild(span);
+            });
+
+            const msg = document.getElementById('personal-msg');
+            msg.textContent = `Welcome, ${state.userName}! Get ready for an experience.`;
+            msg.style.transition = 'opacity 1s';
+            setTimeout(() => msg.style.opacity = '1', fullName.length * 100 + 500);
+
+            // Init Navigation
+            const navContainer = document.getElementById('nav-dots');
+            const icons = ['fa-user', 'fa-images', 'fa-puzzle-piece', 'fa-birthday-cake', 'fa-question', 'fa-gift'];
+            
+            state.sections.forEach((secId, index) => {
+                const dot = document.createElement('div');
+                dot.className = `nav-dot ${index === 0 ? 'active' : ''}`;
+                dot.innerHTML = `<i class="fas ${icons[index]}"></i>`;
+                dot.onclick = () => scrollToSection(index);
+                navContainer.appendChild(dot);
+            });
+
+            // Init Puzzle
+            initPuzzle();
+
+            // Add Key for starting
+            addKey(1); // Key 1: Entering name
+
+            // Start Observer for Memories
+            setupScrollObserver();
+        }
+
+        /* --- Scroll / Navigation Logic --- */
+        function scrollToSection(index) {
+            state.currentSectionIndex = index;
+            const el = document.getElementById(state.sections[index]);
+            el.scrollIntoView({ behavior: 'smooth' });
+            updateNavDots(index);
+        }
+
+        function updateNavDots(index) {
+            const dots = document.querySelectorAll('.nav-dot');
+            dots.forEach(d => d.classList.remove('active'));
+            dots[index].classList.add('active');
+        }
+
+        function setupScrollObserver() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        const index = state.sections.indexOf(entry.target.id);
+                        if (index !== -1) updateNavDots(index);
+                        
+                        // Logic for Memories section
+                        if (entry.target.id === 'sec-memories') {
+                            const cards = document.querySelectorAll('.memory-card');
+                            cards.forEach((card, i) => {
+                                setTimeout(() => card.classList.add('visible'), i * 200);
+                            });
+                            if(!state.memoriesVisited) {
+                                addKey(1); // Key 2: Visiting memories
+                                state.memoriesVisited = true;
+                            }
+                        }
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            state.sections.forEach(sec => observer.observe(document.getElementById(sec)));
+        }
+
+        /* --- Puzzle Logic (Prayer) --- */
+        let puzzleState = [];
+        const correctOrder = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+        
+        function initPuzzle() {
+            const container = document.getElementById('puzzle-game');
+            // Using a simple seed image
+            const imgUrl = 'https://picsum.photos/seed/adampuzzle/300/300';
+            
+            // Create pieces
+            let pieces = [];
+            for(let i=0; i<9; i++) {
+                pieces.push(i);
+            }
+            // Shuffle
+            pieces.sort(() => Math.random() - 0.5);
+            // Ensure solvable (simple check: for this demo, random is usually okay for 3x3 unless strict parity checks)
+            // But let's just ensure it's not solved by accident.
+            if(JSON.stringify(pieces) === JSON.stringify(correctOrder)) pieces.reverse();
+
+            puzzleState = [...pieces];
+
+            container.innerHTML = '';
+            pieces.forEach((posIndex, realIndex) => {
+                const div = document.createElement('div');
+                div.className = 'puzzle-piece';
+                // Calculate background position
+                const row = Math.floor(posIndex / 3);
+                const col = posIndex % 3;
+                div.style.backgroundImage = `url(${imgUrl})`;
+                div.style.backgroundPosition = `-${col * 100}px -${row * 100}px`;
+                div.dataset.index = realIndex; // Current DOM index
+                div.dataset.val = posIndex; // The image part it holds
+                
+                div.onclick = () => swapPiece(realIndex);
+                container.appendChild(div);
+            });
+        }
+
+        let selectedPieceIndex = null;
+
+        function swapPiece(clickedIndex) {
+            const pieces = document.querySelectorAll('.puzzle-piece');
+            
+            if (selectedPieceIndex === null) {
+                // Select first
+                selectedPieceIndex = clickedIndex;
+                pieces[clickedIndex].classList.add('selected');
+                playSound('click');
+            } else {
+                // Swap
+                const piece1 = pieces[selectedPieceIndex];
+                const piece2 = pieces[clickedIndex];
+                
+                // Swap styles (background position represents the image part)
+                const tempBg = piece1.style.backgroundPosition;
+                piece1.style.backgroundPosition = piece2.style.backgroundPosition;
+                piece2.style.backgroundPosition = tempBg;
+
+                // Update logic state
+                const tempVal = puzzleState[selectedPieceIndex];
+                puzzleState[selectedPieceIndex] = puzzleState[clickedIndex];
+                puzzleState[clickedIndex] = tempVal;
+
+                piece1.classList.remove('selected');
+                selectedPieceIndex = null;
+                playSound('click');
+
+                checkPuzzle();
+            }
+        }
+
+        function checkPuzzle() {
+            if (JSON.stringify(puzzleState) === JSON.stringify(correctOrder)) {
+                document.getElementById('puzzle-game').style.display = 'none';
+                document.getElementById('prayer-area').style.display = 'block';
+                addKey(1); // Key 3: Solved Puzzle
+                showToast("Puzzle Solved! Prayer Unlocked.");
+                startConfetti();
+            }
+        }
+
+        function submitPrayer() {
+            const txt = document.getElementById('prayer-input').value;
+            if(!txt) return;
+            
+            const list = document.getElementById('prayer-list');
+            const p = document.createElement('div');
+            p.style.background = 'rgba(255,255,255,0.1)';
+            p.style.padding = '10px';
+            p.style.marginBottom = '5px';
+            p.style.borderRadius = '5px';
+            p.innerHTML = `<strong>${state.userName}:</strong> ${txt}`;
+            list.prepend(p);
+            
+            document.getElementById('prayer-input').value = '';
+            if(!state.prayerPosted) {
+                addKey(1); // Key 4: Posted Prayer
+                state.prayerPosted = true;
+            }
+            showToast("Prayer sent to the universe!");
+        }
+
+        /* --- Cake & Disco --- */
+        function interactWithCake() {
+            if (state.disco) return;
+            
+            // Animation
+            const flame = document.getElementById('flame');
+            flame.style.transition = 'opacity 0.5s';
+            flame.style.opacity = '0'; // Blow candle
+            
+            state.disco = true;
+            document.body.classList.add('disco-active');
+            document.getElementById('disco-btn').style.display = 'inline-block';
+            playSound('music'); // Start music
+            
+            // Loop music
+            state.musicInterval = setInterval(playSound, 4000, 'music');
+
+            if(!state.candlesBlown) {
+                addKey(1); // Key 5: Cake interaction
+                state.candlesBlown = true;
+            }
+            showToast("Party Mode Activated!");
+        }
+
+        function stopDisco() {
+            state.disco = false;
+            document.body.classList.remove('disco-active');
+            document.getElementById('disco-btn').style.display = 'none';
+            document.getElementById('flame').style.opacity = '1';
+            clearInterval(state.musicInterval);
+        }
+
+        /* --- Quiz --- */
+        function checkAnswer(isCorrect) {
+            if(state.quizSolved) return;
+            
+            if(isCorrect) {
+                document.getElementById('quiz-box').style.display = 'none';
+                document.getElementById('quiz-success').style.display = 'block';
+                addKey(1); // Key 6: Quiz
+                state.quizSolved = true;
+                startConfetti();
+            } else {
+                showToast("Oops! Try again.");
+            }
+        }
+
+        /* --- Gift --- */
+        function tryOpenGift() {
+            if (state.keys < totalKeys) {
+                document.getElementById('main-gift').classList.add('shake');
+                setTimeout(() => document.getElementById('main-gift').classList.remove('shake'), 500);
+                showToast(`You need ${totalKeys - state.keys} more keys!`);
+            } else {
+                // Open Gift
+                const modal = document.getElementById('final-modal');
+                modal.style.display = 'flex';
+                document.getElementById('compartments').style.display = 'block';
+                document.getElementById('gift-msg').style.display = 'none';
+                addKey(1); // Key 7: Opening gift (completes loop)
+                playSound('success');
+                startConfetti();
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('final-modal').style.display = 'none';
+        }
+
+        function shareEvent() {
+            if (navigator.share) {
+                navigator.share({
+                    title: "Adam's Birthday",
+                    text: `I just wished Adam Sadiq Ismail a happy birthday! Join the fun.`,
+                    url: window.location.href
+                });
+            } else {
+                showToast("Link copied to clipboard!");
+            }
+        }
+
+        /* --- Confetti Utility --- */
+        function startConfetti() {
+            const canvas = document.getElementById('confetti');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            const particles = [];
+            const colors = ['#FF0055', '#00E5FF', '#FFD600', '#6C00FF', '#00E676'];
+
+            for(let i=0; i<100; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    vx: Math.random() * 4 - 2,
+                    vy: Math.random() * 4 + 2,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    size: Math.random() * 8 + 4
+                });
+            }
+
+            function update() {
+                ctx.clearRect(0,0, canvas.width, canvas.height);
+                let active = false;
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if(p.y < canvas.height) active = true;
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(p.x, p.y, p.size, p.size);
+                });
+                if(active) requestAnimationFrame(update);
+                else ctx.clearRect(0,0, canvas.width, canvas.height);
+            }
+            update();
+        }
+
+    </script>
+</body>
+</html>

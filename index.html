@@ -177,46 +177,46 @@
             -webkit-text-fill-color: transparent;
         }
 
-        /* --- Memories Section (Scroll Animation) --- */
-        .memory-card {
-            width: 100%;
-            height: 250px;
-            background-color: #333;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            overflow: hidden;
-            position: relative;
-            opacity: 0; /* JS handles fade in */
-            transform: scale(0.8);
-            transition: all 0.6s ease;
-        }
+        /* --- UPGRADE: 3D Memory Wall --- */
+.memory-container-wrapper {
+    perspective: 1000px; /* Adds depth to the parent */
+    margin-bottom: 40px;
+}
 
-        .memory-card.visible {
-            opacity: 1;
-            transform: scale(1);
-        }
+.memory-card {
+    width: 85%; /* Slightly wider for better mobile view */
+    height: 280px;
+    background-color: #333;
+    border-radius: 20px;
+    overflow: hidden; /* Important to clip the image inside */
+    position: relative;
+    opacity: 0;
+    transform-style: preserve-3d; /* Essential for 3D */
+    transition: transform 0.1s linear, opacity 0.6s ease;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+    margin: 0 auto 40px auto;
+}
 
-        .memory-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+.memory-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
 
-        .memory-caption {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 10px;
-            transform: translateY(100%);
-            transition: transform 0.3s;
-        }
+/* When card is visible in viewport */
+.memory-card.visible {
+    opacity: 1;
+}
 
-        .memory-card:hover .memory-caption {
-            transform: translateY(0);
-        }
+/* Add a shine effect overlay */
+.memory-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 50%);
+    pointer-events: none;
+}
 
         /* --- Puzzle / Prayer Section --- */
         .puzzle-container {
@@ -458,6 +458,39 @@
             opacity: 1;
             transform: translateX(-50%) translateY(0);
         }
+        /* --- UPGRADE: Scratch Card --- */
+.scratch-container {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    margin: 0 auto;
+    border-radius: 15px;
+    overflow: hidden;
+    box-shadow: 0 0 20px var(--color-primary);
+}
+
+#scratch-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    cursor: crosshair;
+    touch-action: none; /* Prevents scrolling while scratching */
+}
+
+.gift-reveal {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: var(--color-green);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    z-index: 1;
+    color: white;
+}
 
     </style>
 </head>
@@ -574,19 +607,23 @@
             <h2>The Grand Gift</h2>
             <p id="gift-msg">Collect all 7 keys to open this.</p>
             
-            <div class="gift-box locked" id="main-gift" onclick="tryOpenGift()">
-                <i class="fas fa-gift" style="font-size: 5rem; color: white;"></i>
-            </div>
-
-            <div id="compartments" style="display: none; margin-top: 20px; text-align: left; width: 100%;">
-                <h3 style="color: var(--color-accent);">Gift Contents:</h3>
-                <ul style="list-style: none; margin-top: 10px;">
-                    <li style="margin-bottom: 10px;"><i class="fas fa-heart" style="color: var(--color-primary);"></i> Eternal Happiness</li>
-                    <li style="margin-bottom: 10px;"><i class="fas fa-star" style="color: var(--color-secondary);"></i> Success in all endeavors</li>
-                    <li style="margin-bottom: 10px;"><i class="fas fa-coins" style="color: var(--color-purple);"></i> Abundance & Wealth</li>
-                </ul>
-                <button class="btn" onclick="shareEvent()">Share Joy</button>
-            </div>
+            <!-- Section 6 Update -->
+<div class="scratch-container" id="gift-container">
+    <canvas id="scratch-canvas" width="250" height="250"></canvas>
+    <div class="gift-reveal">
+        <i class="fas fa-unlock-alt" style="font-size: 3rem;"></i>
+        <h3>OPENED</h3>
+    </div>
+</div>
+<div id="compartments" style="display: none; margin-top: 20px; text-align: left; width: 100%;">
+    <!-- Keep your existing list content here -->
+    <h3 style="color: var(--color-accent);">Gift Contents:</h3>
+    <ul style="list-style: none; margin-top: 10px;">
+        <li style="margin-bottom: 10px;"><i class="fas fa-heart" style="color: var(--color-primary);"></i> Eternal Happiness</li>
+        <li style="margin-bottom: 10px;"><i class="fas fa-star" style="color: var(--color-secondary);"></i> Success</li>
+    </ul>
+    <button class="btn" onclick="shareEvent()">Share Joy</button>
+</div>
         </section>
 
     </main>
@@ -892,26 +929,56 @@
             }
         }
 
-        function submitPrayer() {
-            const txt = document.getElementById('prayer-input').value;
-            if(!txt) return;
-            
-            const list = document.getElementById('prayer-list');
-            const p = document.createElement('div');
-            p.style.background = 'rgba(255,255,255,0.1)';
-            p.style.padding = '10px';
-            p.style.marginBottom = '5px';
-            p.style.borderRadius = '5px';
-            p.innerHTML = `<strong>${state.userName}:</strong> ${txt}`;
-            list.prepend(p);
-            
-            document.getElementById('prayer-input').value = '';
-            if(!state.prayerPosted) {
-                addKey(1); // Key 4: Posted Prayer
-                state.prayerPosted = true;
-            }
-            showToast("Prayer sent to the universe!");
-        }
+        // --- UPGRADE: Floating Lanterns ---
+function submitPrayer() {
+    const txt = document.getElementById('prayer-input').value;
+    if(!txt) return;
+    
+    // Create the lantern element
+    const lantern = document.createElement('div');
+    lantern.className = 'lantern';
+    lantern.innerHTML = `<i class="fas fa-quote-left" style="font-size:10px; opacity:0.5"></i> ${txt.substring(0, 30)}...`;
+    
+    // Randomize starting position at bottom
+    const randomLeft = Math.random() * 80 + 10; // 10% to 90%
+    
+    // Apply styles dynamically
+    lantern.style.position = 'fixed';
+    lantern.style.bottom = '-100px';
+    lantern.style.left = `${randomLeft}%`;
+    lantern.style.background = `rgba(255, ${Math.random()*100 + 155}, 0, 0.8)`; // Orange/Yellow hues
+    lantern.style.color = '#fff';
+    lantern.style.padding = '10px 15px';
+    lantern.style.borderRadius = '20px 20px 0 0'; // Lantern shape
+    lantern.style.boxShadow = '0 0 20px rgba(255, 100, 0, 0.6)';
+    lantern.style.zIndex = '10';
+    lantern.style.fontSize = '0.9rem';
+    lantern.style.transition = 'transform 4s linear, opacity 4s ease-in';
+    lantern.style.maxWidth = '200px';
+    
+    document.body.appendChild(lantern);
+
+    // Trigger animation
+    setTimeout(() => {
+        lantern.style.transform = `translateY(-${window.innerHeight + 200}px) rotate(${Math.random()*20 - 10}deg)`;
+        lantern.style.opacity = '0';
+    }, 100);
+
+    // Cleanup DOM after animation
+    setTimeout(() => {
+        lantern.remove();
+    }, 4100);
+
+    document.getElementById('prayer-input').value = '';
+    
+    // Existing logic for keys
+    if(!state.prayerPosted) {
+        addKey(1); 
+        state.prayerPosted = true;
+    }
+    showToast("Prayer sent to the heavens!");
+    triggerVibration(); // See Upgrade 3
+}
 
         /* --- Cake & Disco --- */
         function interactWithCake() {
@@ -1030,7 +1097,165 @@
             }
             update();
         }
+// --- UPGRADE: 3D Tilt Effect Logic ---
+function init3DMemories() {
+    const cards = document.querySelectorAll('.memory-card');
+    
+    // We use 'scroll' event for performance, throttled slightly
+    let ticking = false;
 
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                cards.forEach(card => {
+                    const rect = card.getBoundingClientRect();
+                    const centerY = window.innerHeight / 2;
+                    const centerYCard = rect.top + rect.height / 2;
+                    
+                    // Calculate distance from center of screen
+                    const distFromCenter = centerYCard - centerY;
+                    
+                    // Only animate if card is somewhat visible
+                    if (rect.top < window.innerHeight && rect.bottom > 0) {
+                        // Rotation logic: Rotate Y based on X, Rotate X based on Y
+                        // Here we focus on Y rotation (left/right tilt) as user scrolls
+                        const rotateY = distFromCenter * 0.05; 
+                        const scale = 1 - (Math.abs(distFromCenter) / window.innerHeight) * 0.2;
+                        
+                        card.style.transform = `rotateY(${rotateY}deg) scale(${scale})`;
+                    }
+                });
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+}
+
+// Call this in your initMainApp() function or at the end of script
+init3DMemories();
+
+        // --- UPGRADE: Haptic Feedback ---
+function triggerVibration(pattern = 50) {
+    if (navigator.vibrate) {
+        navigator.vibrate(pattern);
+    }
+}
+
+// INTEGRATION: Add triggerVibration() inside:
+// 1. addKey() -> triggerVibration([50, 30, 50]); // Success double tap
+// 2. startJourney() -> triggerVibration(200); // Heavy start
+// 3. swapPiece() -> triggerVibration(10); // Light tap
+// --- UPGRADE: Scratch Card Logic ---
+const canvas = document.getElementById('scratch-canvas');
+const ctx = canvas.getContext('2d');
+let isDrawing = false;
+let lastPoint = null;
+
+function initScratchCard() {
+    // Fill canvas with a "Cover" color (Silver/Grey)
+    ctx.globalCompositeOperation = 'source-over';
+    ctx.fillStyle = '#CCCCCC';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    // Add text to the scratch cover
+    ctx.fillStyle = '#555';
+    ctx.font = '20px Poppins';
+    ctx.textAlign = 'center';
+    ctx.fillText("Scratch Me!", 125, 125);
+    
+    // Set up composite operation for "erasing"
+    ctx.globalCompositeOperation = 'destination-out';
+    
+    // Events
+    canvas.addEventListener('mousedown', startScratch);
+    canvas.addEventListener('mousemove', scratch);
+    canvas.addEventListener('mouseup', endScratch);
+    canvas.addEventListener('touchstart', startScratch);
+    canvas.addEventListener('touchmove', scratch);
+    canvas.addEventListener('touchend', endScratch);
+}
+
+function getMousePos(e) {
+    const rect = canvas.getBoundingClientRect();
+    let clientX = e.clientX;
+    let clientY = e.clientY;
+    if(e.touches && e.touches.length > 0) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+    }
+    return {
+        x: clientX - rect.left,
+        y: clientY - rect.top
+    };
+}
+
+function startScratch(e) {
+    if (state.keys < totalKeys) {
+        showToast("Need all keys first!");
+        return;
+    }
+    e.preventDefault();
+    isDrawing = true;
+    lastPoint = getMousePos(e);
+}
+
+function scratch(e) {
+    if (!isDrawing) return;
+    e.preventDefault();
+    const currentPoint = getMousePos(e);
+    const dist = distanceBetween(lastPoint, currentPoint);
+    const angle = angleBetween(lastPoint, currentPoint);
+
+    for (let i = 0; i < dist; i++) {
+        const x = lastPoint.x + (Math.sin(angle) * i);
+        const y = lastPoint.y + (Math.cos(angle) * i);
+        ctx.beginPath();
+        ctx.arc(x, y, 15, 0, Math.PI * 2, false);
+        ctx.fill();
+    }
+    lastPoint = currentPoint;
+    checkScratchPercentage();
+}
+
+function endScratch() {
+    isDrawing = false;
+}
+
+function distanceBetween(point1, point2) {
+    return Math.sqrt(Math.pow(point2.x - point1.x, 2) + Math.pow(point2.y - point1.y, 2));
+}
+
+function angleBetween(point1, point2) {
+    return Math.atan2( point2.x - point1.x, point2.y - point1.y );
+}
+
+function checkScratchPercentage() {
+    // Check pixel data (optimization: check every 10th pixel to save CPU)
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const pixels = imageData.data;
+    let transparentPixels = 0;
+    for (let i = 0; i < pixels.length; i += 40) { // Skip pixels for performance
+        if (pixels[i + 3] < 128) { // Alpha channel
+            transparentPixels++;
+        }
+    }
+    // Total pixels checked (pixels.length / 4) / 10
+    const totalChecked = pixels.length / 40;
+    const percentage = (transparentPixels / totalChecked) * 100;
+
+    if (percentage > 40) { // If 40% scratched, reveal all
+        canvas.style.display = 'none';
+        document.getElementById('compartments').style.display = 'block';
+        addKey(1); // Final Key
+        startConfetti();
+        triggerVibration([100, 50, 100]);
+    }
+}
+
+// Call initScratchCard() inside your initMainApp()
+
+    
     </script>
 </body>
 </html>
